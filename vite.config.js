@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/Cinematography",
+  base: '/cinematography-portfolio/',
   plugins: [
     tailwindcss(),
     react()],
