@@ -3,18 +3,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronLeft, FaChevronRight, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import ReactPlayer from "react-player";
 
-// Import your video assets
-import myWorkVideo1 from "../assets/1.mp4";
-import myWorkVideo2 from "../assets/2.mp4";
-import myWorkVideo3 from "../assets/3.mp4";
-import myWorkVideo4 from "../assets/4.mp4";
+// IMPORTANT: No longer importing local video assets
+// Delete the actual .mp4 files from your src/assets folder after this step.
 
 const videos = [
-  myWorkVideo1,
-  myWorkVideo2,
-  myWorkVideo3,
-  myWorkVideo4,
- 
+  "https://vimeo.com/1092080900/e3b4de5129?share=copy", // Your first video
+  "https://vimeo.com/1092081999/e97da79b8b?share=copy", // Your second video
+  "https://vimeo.com/1092081163/402f6632f7?share=copy", // Your third video
+  "https://vimeo.com/1092080665/477e7b71d4?share=copy", // Your fourth video
 ];
 
 const Work = () => {
@@ -23,6 +19,7 @@ const Work = () => {
     Array(videos.length).fill(true) // All videos start muted
   );
 
+  // Use functional updates for setCurrent to ensure latest state is used in useEffect
   const next = () => setCurrent((prev) => (prev + 1) % videos.length);
   const prev = () => setCurrent((prev) => (prev - 1 + videos.length) % videos.length);
 
@@ -44,12 +41,16 @@ const Work = () => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Use the 'next' and 'prev' functions directly, which now handle state updates functionally
       if (e.key === "ArrowLeft") prev();
       if (e.key === "ArrowRight") next();
     };
+
     window.addEventListener("keydown", handleKeyDown);
+
+    // Clean up the event listener when the component unmounts
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [current]);
+  }, []); // Empty dependency array: runs once on mount, cleans up on unmount
 
   return (
     <div className="relative bg-black text-white h-screen w-full overflow-hidden flex flex-col justify-center items-center">
@@ -88,10 +89,8 @@ const Work = () => {
                     ease: [0.25, 0.46, 0.45, 0.94],
                   }}
                 >
-                  {/* Apply onClick directly to this div */}
-                  <div
-                    onClick={() => toggleMute(index)} // <--- Added onClick here!
-                    className="relative overflow-hidden rounded-2xl transition-all duration-300 flex flex-col items-center group cursor-pointer" // Added cursor-pointer for feedback
+                  <div // This div now only handles sizing and styling
+                    className="relative overflow-hidden rounded-2xl transition-all duration-300 flex flex-col items-center group"
                     style={{
                       width: isCenter ? "100vw" : "50vw",
                       height: isCenter ? "100vh" : "70vh",
@@ -105,12 +104,23 @@ const Work = () => {
                       controls={false}
                       width="100%"
                       height="100%"
+                      config={{
+                        vimeo: {
+                          playerOptions: {
+                            dnt: true,
+                            byline: false,
+                            portrait: false,
+                            title: false,
+                          }
+                        }
+                      }}
                     />
-                    {/* Visual Mute/Unmute Indicator (optional, but good for feedback) */}
+                    {/* THIS IS THE CLICKABLE ELEMENT FOR MUTE/UNMUTE */}
                     <div
+                      onClick={() => toggleMute(index)} // <-- onClick moved here!
                       className={`
-                        absolute z-10 bg-black/50 text-white rounded-full
-                        flex items-center justify-center
+                        absolute z-20 bg-black/50 text-white rounded-full
+                        flex items-center justify-center cursor-pointer // Added cursor-pointer for visual feedback
                         transition-opacity duration-300
                         ${isCenter
                           ? 'bottom-5 right-5 p-3' // Consistent position for center video
